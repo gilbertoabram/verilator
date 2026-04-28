@@ -262,24 +262,29 @@ class VerilatedVar final : public VerilatedVarProps {
 protected:
     const bool m_isParam;
     friend class VerilatedScope;
+
+    // clang's c++23 unique_ptr requires to know the size of the pointer
+    // type to instantiate the destructor, so move the constructors and
+    // destructor definitions (both needing the unique_ptr's destructor)
+    // past the definition of VerilatedForceControlSignals. The inline
+    // versions present prior to the commit which introduced this comment
+    // work in gcc, and can be restored when 
+    // https://github.com/llvm/llvm-project/issues/175483 gets resolved.
+    // The issue seems to be a special case of a much older issue which is
+    // still open: https://github.com/llvm/llvm-project/issues/59966
+
     // CONSTRUCTORS
+    inline
     VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
-                 VerilatedVarFlags vlflags, int udims, int pdims, bool isParam)
-        : VerilatedVarProps{vltype, vlflags, udims, pdims}
-        , m_datap{datap}
-        , m_namep{namep}
-        , m_isParam{isParam} {}
+                 VerilatedVarFlags vlflags, int udims, int pdims, bool isParam);
+    inline
     VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
                  VerilatedVarFlags vlflags, int udims, int pdims, bool isParam,
-                 std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals)
-        : VerilatedVarProps{vltype, vlflags, udims, pdims}
-        , m_datap{datap}
-        , m_namep{namep}
-        , m_forceControlSignals{std::move(forceControlSignals)}
-        , m_isParam{isParam} {}
+                 std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals);
 
 public:
-    ~VerilatedVar() = default;
+    //~VerilatedVar() = default;
+    inline ~VerilatedVar();
     VerilatedVar(VerilatedVar&&) = default;
     // ACCESSORS
     void* datap() const { return m_datap; }
@@ -298,5 +303,25 @@ struct VerilatedForceControlSignals final {
     const VerilatedVar* forceValueSignalp{nullptr};  // __VforceVal signal
     const VerilatedVar forceReadSignal;  // __VforceRd signal
 };
+
+inline
+VerilatedVar::VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
+                           VerilatedVarFlags vlflags, int udims, int pdims, bool isParam)
+        : VerilatedVarProps{vltype, vlflags, udims, pdims}
+        , m_datap{datap}
+        , m_namep{namep}
+        , m_isParam{isParam} {}
+
+inline
+VerilatedVar::VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
+                           VerilatedVarFlags vlflags, int udims, int pdims, bool isParam,
+                           std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals)
+        : VerilatedVarProps{vltype, vlflags, udims, pdims}
+        , m_datap{datap}
+        , m_namep{namep}
+        , m_forceControlSignals{std::move(forceControlSignals)}
+        , m_isParam{isParam} {}
+
+inline VerilatedVar::~VerilatedVar() = default;
 
 #endif  // Guard
