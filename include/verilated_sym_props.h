@@ -268,19 +268,17 @@ protected:
     // destructor definitions (both needing the unique_ptr's destructor)
     // past the definition of VerilatedForceControlSignals. The inline
     // versions present prior to the commit which introduced this comment
-    // work in gcc, and can be restored when 
+    // work in gcc, and can be restored when
     // https://github.com/llvm/llvm-project/issues/175483 gets resolved.
     // The issue seems to be a special case of a much older issue which is
     // still open: https://github.com/llvm/llvm-project/issues/59966
 
     // CONSTRUCTORS
-    inline
-    VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
-                 VerilatedVarFlags vlflags, int udims, int pdims, bool isParam);
-    inline
-    VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
-                 VerilatedVarFlags vlflags, int udims, int pdims, bool isParam,
-                 std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals);
+    inline VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
+                        VerilatedVarFlags vlflags, int udims, int pdims, bool isParam);
+    inline VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
+                        VerilatedVarFlags vlflags, int udims, int pdims, bool isParam,
+                        std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals);
 
 public:
     //~VerilatedVar() = default;
@@ -304,23 +302,22 @@ struct VerilatedForceControlSignals final {
     const VerilatedVar forceReadSignal;  // __VforceRd signal
 };
 
-inline
-VerilatedVar::VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
-                           VerilatedVarFlags vlflags, int udims, int pdims, bool isParam)
-        : VerilatedVarProps{vltype, vlflags, udims, pdims}
-        , m_datap{datap}
-        , m_namep{namep}
-        , m_isParam{isParam} {}
+inline VerilatedVar::VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
+                                  VerilatedVarFlags vlflags, int udims, int pdims, bool isParam)
+    : VerilatedVarProps{vltype, vlflags, udims, pdims}
+    , m_datap{datap}
+    , m_namep{namep}
+    , m_isParam{isParam} {}
 
-inline
-VerilatedVar::VerilatedVar(const char* namep, void* datap, VerilatedVarType vltype,
-                           VerilatedVarFlags vlflags, int udims, int pdims, bool isParam,
-                           std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals)
-        : VerilatedVarProps{vltype, vlflags, udims, pdims}
-        , m_datap{datap}
-        , m_namep{namep}
-        , m_forceControlSignals{std::move(forceControlSignals)}
-        , m_isParam{isParam} {}
+inline VerilatedVar::VerilatedVar(
+    const char* namep, void* datap, VerilatedVarType vltype, VerilatedVarFlags vlflags, int udims,
+    int pdims, bool isParam,
+    std::unique_ptr<const VerilatedForceControlSignals> forceControlSignals)
+    : VerilatedVarProps{vltype, vlflags, udims, pdims}
+    , m_datap{datap}
+    , m_namep{namep}
+    , m_forceControlSignals{std::move(forceControlSignals)}
+    , m_isParam{isParam} {}
 
 inline VerilatedVar::~VerilatedVar() = default;
 
