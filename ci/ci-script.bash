@@ -46,6 +46,9 @@ if [ "$CI_BUILD_STAGE_NAME" = "build" ]; then
   if [ "$CI_DEV_GCOV" = 1 ]; then
     CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-dev-gcov"
   fi
+  if [ -n "$CI_CXX_STD" ]; then
+    CONFIGURE_ARGS="$CONFIGURE_ARGS CXXFLAGS=-std=$CI_CXX_STD"
+  fi
   ./configure $CONFIGURE_ARGS --prefix="$INSTALL_DIR"
   ccache -z
   "$MAKE" -j "$NPROC" -k
@@ -102,6 +105,10 @@ elif [ "$CI_BUILD_STAGE_NAME" = "test" ]; then
     # Feeling brave?
     find . -delete
     ls -la .
+  fi
+
+  if [ -n "$CI_CXX_STD" ]; then
+    export CXXFLAGS="-std=$CI_CXX_STD"
   fi
 
   # Run the specified test

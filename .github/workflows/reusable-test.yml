@@ -17,6 +17,10 @@ on:
       cc:  # gcc or clang
         required: true
         type: string
+      std:  # c++?? or gnu++?? or nothing
+        required: false
+        type: string
+        default: ''
       reloc:  # 0 or 1
         required: true
         type: number
@@ -50,6 +54,7 @@ jobs:
       CI_RUNS_ON: ${{ inputs.os }}
       CI_RELOC: ${{inputs.reloc }}
       CXX: ${{ inputs.cc == 'clang' && 'clang++' || 'g++' }}
+      CI_CXX_STD: ${{ inputs.std }}
       CACHE_BASE_KEY: test-${{ inputs.os }}-${{ inputs.cc }}-${{inputs.reloc }}-${{ inputs.suite }}
       CCACHE_MAXSIZE: 100M  # Per build per suite (* 5 * 5 = 2500M in total)
     steps:
