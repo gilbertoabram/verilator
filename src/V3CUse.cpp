@@ -73,7 +73,8 @@ class CUseVisitor final : public VNVisitorConst {
         if (stypep && stypep->classOrPackagep()) {
             addNewUse(nodep, VUseType::INT_INCLUDE, stypep->classOrPackagep()->name());
             iterateChildrenConst(stypep);
-        } else if (VN_CAST(nodep->skipRefp(), DynArrayDType) || VN_CAST(nodep->skipRefp(), QueueDType)) {
+        } else if (VN_CAST(nodep->skipRefp(), DynArrayDType)
+                   || VN_CAST(nodep->skipRefp(), QueueDType)) {
             // Workaround for clang issue https://github.com/llvm/llvm-project/issues/175483
             // classes used in dynamic arrays or queues need full definition for template
             // instantiations.
@@ -81,9 +82,11 @@ class CUseVisitor final : public VNVisitorConst {
             // Get the element type, iterating in case of multi-dimensional arrays
             AstNodeDType* elementDTypep = nodep->skipRefp();
             while (elementDTypep) {
-                if (const AstDynArrayDType* const darrayp = VN_CAST(elementDTypep, DynArrayDType)) {
+                if (const AstDynArrayDType* const darrayp
+                    = VN_CAST(elementDTypep, DynArrayDType)) {
                     elementDTypep = darrayp->subDTypep()->skipRefp();
-                } else if (const AstQueueDType* const queuep = VN_CAST(elementDTypep, QueueDType)) {
+                } else if (const AstQueueDType* const queuep
+                           = VN_CAST(elementDTypep, QueueDType)) {
                     elementDTypep = queuep->subDTypep()->skipRefp();
                 } else {
                     break;
