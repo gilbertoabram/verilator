@@ -1978,8 +1978,6 @@ struct VlNull final {
         return nullptr;
     }
 };
-inline bool operator==(const void* ptr, VlNull) { return !ptr; }
-inline bool operator==(VlNull, const void* ptr) { return !ptr; }
 
 //===================================================================
 // Verilog class reference container

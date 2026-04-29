@@ -202,7 +202,7 @@ jobs:
           - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: vltmt-2}
 
   test-2404-clang:
-    name: Test | ${{ matrix.os }} | ${{ matrix.cc }} | ${{ matrix.reloc && 'reloc | ' || '' }} ${{ matrix.std && format('{0} | ', matrix.std) || '' }} ${{ matrix.suite }}
+    name: Test | ${{ matrix.os }} | ${{ matrix.cc }} | ${{ matrix.reloc && 'reloc | ' || '' }} ${{ matrix.suite }}
     needs: build-2404-clang
     uses: ./.github/workflows/reusable-test.yml
     with:
