@@ -60,6 +60,23 @@ jobs:
         include:
           - {os: ubuntu-24.04, cc: clang, asan: 1}
 
+  build-2404-gcc-gnu23:
+    name: Build | ${{ matrix.os }} | ${{ matrix.cc }} | gnu++23${{ matrix.asan && ' | asan' || '' }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      sha: ${{ github.sha }}
+      os: ${{ matrix.os }}
+      os-name: linux
+      cc: ${{ matrix.cc }}
+      std: gnu++23
+      dev-asan: ${{ matrix.asan }}
+      dev-gcov: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, cc: gcc, asan: 0}
+
   build-2404-clang-gnu23:
     name: Build | ${{ matrix.os }} | ${{ matrix.cc }} | gnu++23${{ matrix.asan && ' | asan' || '' }}
     uses: ./.github/workflows/reusable-build.yml
@@ -75,7 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {os: ubuntu-24.04, cc: clang, asan: 1}
+          - {os: ubuntu-24.04, cc: clang, asan: 0}
 
   build-2204-gcc:
     name: Build | ${{ matrix.os }} | ${{ matrix.cc }}${{ matrix.asan && ' | asan' || '' }}
@@ -225,8 +242,33 @@ jobs:
           - {os: ubuntu-24.04, cc: clang, reloc: 0, suite: vltmt-1}
           - {os: ubuntu-24.04, cc: clang, reloc: 0, suite: vltmt-2}
 
+  test-2404-gcc-gnu23:
+    name: Test | ${{ matrix.os }} | ${{ matrix.cc }} | ${{ matrix.reloc && 'reloc | ' || '' }}gnu++23 | ${{ matrix.suite }}
+    needs: build-2404-gcc-gnu23
+    uses: ./.github/workflows/reusable-test.yml
+    with:
+      archive: ${{ needs.build-2404-gcc-gnu23.outputs.archive }}
+      os: ${{ matrix.os }}
+      cc: ${{ matrix.cc }}
+      std: gnu++23
+      reloc: ${{ matrix.reloc }}
+      suite: ${{ matrix.suite }}
+      dev-gcov: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Ubuntu 24.04 gcc -std=gnu++23
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: dist-vlt-0}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: dist-vlt-1}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: dist-vlt-2}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: dist-vlt-3}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: vltmt-0}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: vltmt-1}
+          - {os: ubuntu-24.04, cc: gcc, reloc: 0, suite: vltmt-2}
+
   test-2404-clang-gnu23:
-    name: Test | ${{ matrix.os }} | ${{ matrix.cc }} | ${{ matrix.reloc && 'reloc | ' || '' }} gnu++23 | ${{ matrix.suite }}
+    name: Test | ${{ matrix.os }} | ${{ matrix.cc }} | ${{ matrix.reloc && 'reloc | ' || '' }}gnu++23 | ${{ matrix.suite }}
     needs: build-2404-clang-gnu23
     uses: ./.github/workflows/reusable-test.yml
     with:

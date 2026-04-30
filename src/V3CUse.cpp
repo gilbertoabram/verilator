@@ -96,6 +96,7 @@ class CUseVisitor final : public VNVisitorConst {
             if (AstClassRefDType* classRefp = VN_CAST(elementDTypep, ClassRefDType)) {
                 addNewUse(nodep, VUseType::INT_INCLUDE, classRefp->name() + "__Vclpkg");
             }
+            iterateChildrenConst(nodep);
         } else if (const AstClassRefDType* const classp
                    = VN_CAST(nodep->skipRefp(), ClassRefDType)) {
             addNewUse(nodep, VUseType::INT_FWD_CLASS, classp->name());
